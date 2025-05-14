@@ -5,8 +5,6 @@ import { User } from "src/user/schema/user.schema";
 import { RegistrationDto } from "./dto/registration_dto";
 import { JwtService } from "@nestjs/jwt";
 import { LoginDto } from "./dto/login_dto";
-import { filter } from "rxjs";
-import { response } from "express";
 
 @Injectable()
 export class AuthService{
@@ -75,11 +73,11 @@ export class AuthService{
     async generateToken(tokenPayload: Object): Promise<Object | null>{
         const token = await this.jwtService.signAsync(tokenPayload, {
             expiresIn: '10m',
-            secret: "BLOG_JWT_SECRET"
+            secret: "JWT_SECRET"
         }) 
         const refreshToken = await this.jwtService.signAsync(tokenPayload,{
             expiresIn: '7d',
-            secret: "BLOG_JWT_REFRESH_SECRET"
+            secret: "JWT_REFRESH_SECRET"
         })
         return {
             token: token,
