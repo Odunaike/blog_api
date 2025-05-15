@@ -34,8 +34,27 @@ export class BlogService {
         }
     }
 
-    getAllUnapprovedBlogPost(){}
+    async getAllUnapprovedBlogPost(){
+        try{
+            return await this.blogModel.find(
+                {
+                    status: false
+                }
+            )
+        }catch (error){
+            throw new HttpException("Error getting posts from databse", HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
 
-    adminApprovePost(){}
+    adminApprovePost(postId: string){
+        try {
+            const updatedPost = this.blogModel.findByIdAndUpdate(
+                postId, {status: true}, {new : true}
+            )
+            return updatedPost
+        } catch (error) {
+            throw new HttpException("unable to approve post", HttpStatus.CONFLICT)
+        }
+    }
 
 }

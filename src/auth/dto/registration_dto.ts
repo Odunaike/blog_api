@@ -13,7 +13,7 @@ export class RegistrationDto {
     @IsOptional()
     email?: string
 
-    @IsBoolean()
+    @IsString()
     @IsOptional()
-    isAdmin?: string
+    role?: string
 }

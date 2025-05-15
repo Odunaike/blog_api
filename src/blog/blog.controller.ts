@@ -1,4 +1,4 @@
-import { Controller,Get, Post, UploadedFile, UseInterceptors, Body, HttpException, HttpStatus, UseGuards, Request, Param } from '@nestjs/common';
+import { Controller,Get, Post, UploadedFile, UseInterceptors, Body, HttpException, HttpStatus, UseGuards, Request, Param, Patch } from '@nestjs/common';
 import { S3Service } from 'src/s3/s3.service';
 import { BlogService } from './blog.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -61,5 +61,12 @@ export class BlogController {
     @Roles(Role.ADMIN)
     getAllUnapprovedPost(){
         return this.blogService.getAllUnapprovedBlogPost()
+    }
+
+    @Patch('approve/:id')
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles(Role.ADMIN)
+    adminApprovePost(@Param('id') id: string){
+        return this.blogService.adminApprovePost(id)
     }
 }
