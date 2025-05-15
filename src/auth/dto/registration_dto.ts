@@ -15,5 +15,5 @@ export class RegistrationDto {
 
     @IsBoolean()
     @IsOptional()
-    isAdmin?: boolean
+    isAdmin?: string
 }

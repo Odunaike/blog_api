@@ -15,8 +15,8 @@ export class User {
     @Prop({required: false, select: false})
     refreshToken?: string
 
-    @Prop({default: false})
-    isAdmin: boolean
+    @Prop({default: 'user'})
+    role: string
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

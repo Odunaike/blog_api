@@ -3,7 +3,10 @@ import { S3Service } from 'src/s3/s3.service';
 import { BlogService } from './blog.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateBlogDto } from './dto/create_blog_dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/guard/auth.guard';
+import { RoleGuard } from 'src/guard/role.guard';
+import { Role } from 'src/enum/roles';
+import { Roles } from 'src/decorator/role.decorator';
 
 @Controller('blog')
 export class BlogController {
@@ -51,5 +54,12 @@ export class BlogController {
     @Get('posts')
     getAllApprovedPost(){
         return this.blogService.getAllApprovedBlogPost()
+    }
+
+    @Get('pendingposts')
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles(Role.ADMIN)
+    getAllUnapprovedPost(){
+        return this.blogService.getAllUnapprovedBlogPost()
     }
 }

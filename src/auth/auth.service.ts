@@ -26,7 +26,7 @@ export class AuthService{
                 throw new HttpException("username already exists", HttpStatus.CONFLICT)
             }
             const newUser = new this.userModel(registrationDto)
-            const tokens = await this.generateToken({id: newUser._id})
+            const tokens = await this.generateToken({id: newUser._id, role: newUser.role})
             newUser.save()
             return tokens
         } catch (error) {
@@ -54,7 +54,8 @@ export class AuthService{
             if(!(user.password == loginDto.password)){
                 throw new HttpException("Invalid Login details", HttpStatus.BAD_REQUEST)
             }
-            const tokens = await this.generateToken({id: user._id})
+            //use the id and role for the token payload
+            const tokens = await this.generateToken({id: user._id, role: user.role})
             const currentUser = user.toObject()
             //remove the sensitive information from the returned object
             delete currentUser.refreshToken
