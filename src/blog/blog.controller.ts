@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseInterceptors, Body, HttpException, HttpStatus, UseGuards, Request, Inject } from '@nestjs/common';
+import { Controller,Get, Post, UploadedFile, UseInterceptors, Body, HttpException, HttpStatus, UseGuards, Request, Param } from '@nestjs/common';
 import { S3Service } from 'src/s3/s3.service';
 import { BlogService } from './blog.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -36,13 +36,20 @@ export class BlogController {
                 file.originalname,
                 file.mimetype
             )
+            //add the image url and authorId (i.e user._id) to the blog Dto
             blogPost.image = imageUrl
             const authorId = req.user.id
+
             const createdBlog = await this.blogService.createBlogPost(authorId, blogPost)
             return createdBlog.toObject()
         } catch (error) {
             if(error instanceof HttpException){throw new HttpException(error.message, error.getStatus())}
             console.log(error)
         }
+    }
+
+    @Get('posts')
+    getAllApprovedPost(){
+        return this.blogService.getAllApprovedBlogPost()
     }
 }

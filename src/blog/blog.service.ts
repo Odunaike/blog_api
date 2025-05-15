@@ -24,8 +24,18 @@ export class BlogService {
         }
     }
 
-    getAllApprovedBlogPost(){}
+    async getAllApprovedBlogPost(){
+        try {
+           return await this.blogModel.find({
+                status : true
+           })
+        } catch (error) {
+            throw new HttpException("Error getting posts from databse", HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
 
     getAllUnapprovedBlogPost(){}
+
+    adminApprovePost(){}
 
 }
