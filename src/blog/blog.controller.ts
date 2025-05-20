@@ -41,7 +41,7 @@ export class BlogController {
             )
             //add the image url and authorId (i.e user._id) to the blog Dto
             blogPost.image = imageUrl
-            const authorId = req.user.id
+            const authorId = req.user.id //todo change to author name
 
             const createdBlog = await this.blogService.createBlogPost(authorId, blogPost)
             return createdBlog.toObject()

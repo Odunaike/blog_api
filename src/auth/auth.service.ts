@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { ForbiddenException, HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose"
 import { User } from "src/user/schema/user.schema";
@@ -56,10 +56,14 @@ export class AuthService{
             }
             //use the id and role for the token payload
             const tokens = await this.generateToken({id: user._id, role: user.role})
-            const currentUser = user.toObject()
+            //save refreshtoken token to database
+            await this.userModel.findByIdAndUpdate(
+                user._id,
+                {refreshToken: tokens.refreshToken},
+            )
+            const currentUser = user?.toObject()
             //remove the sensitive information from the returned object
-            delete currentUser.refreshToken
-            delete currentUser.password
+            delete currentUser?.password
             return {...tokens, user: currentUser}
         } catch (error) {
             console.log(error)
@@ -71,7 +75,7 @@ export class AuthService{
         
     }
 
-    async generateToken(tokenPayload: Object): Promise<Object | null>{
+    async generateToken(tokenPayload: Object): Promise<{token: string, refreshToken: string}>{
         const token = await this.jwtService.signAsync(tokenPayload, {
             expiresIn: '10m',
             secret: "JWT_SECRET"
@@ -84,6 +88,30 @@ export class AuthService{
             token: token,
             refreshToken: refreshToken
         }
+    }
+
+    async refreshToken(
+        userID: string,
+        refreshToken: string
+    ){
+        
+            const user = await this.userModel.findById(
+                userID
+            ).select("+refreshToken")
+            console.log(user?.toObject())
+            //check if user or refreshtoken exists
+            if (!user || !user.refreshToken)
+                throw new ForbiddenException("no user ke")
+            //verify the refreshtoken
+            if( !(refreshToken == user.refreshToken) )
+                throw new ForbiddenException("refresh token not same as stored in db")
+            //generate new token
+            const tokens = await this.generateToken({id: user._id, role: user.role})
+            //store the new refreshtoken in database
+            await this.userModel.findByIdAndUpdate(userID, {refreshToken: tokens.refreshToken})
+
+            return tokens
+        
     }
 
 }

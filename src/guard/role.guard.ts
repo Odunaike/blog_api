@@ -5,7 +5,7 @@ import { Role } from 'src/enum/roles'
 
 @Injectable()
 export class RoleGuard implements CanActivate{
-    //I wiill use the reflector from @nestjs/core to extract the metadata set on the handler 
+    //I will use the reflector from @nestjs/core to extract the metadata set on the handler 
     // which was done by the Roles decorator that had been created using the SetMetaData
     constructor(private reflector: Reflector){}
 
